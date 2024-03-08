@@ -127,7 +127,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
      * 获取某个用户的提交信息
      *
      * @param questionSubmit
-     * @param request
+     * @param loginUser
      * @return
      */
     @Override
@@ -147,7 +147,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
      * 获取问题提交情况的整页
      *
      * @param questionSubmitPage
-     * @param request
+     * @param loginUser
      * @return
      */
     @Override

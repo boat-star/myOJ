@@ -14,9 +14,9 @@ import lombok.Data;
 @Data
 public class Question implements Serializable {
     /**
-     * id
+     * id 雪花算法
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**

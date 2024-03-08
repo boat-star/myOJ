@@ -10,14 +10,15 @@ import com.mhc.myoj.common.ResultUtils;
 import com.mhc.myoj.constant.UserConstant;
 import com.mhc.myoj.exception.BusinessException;
 import com.mhc.myoj.exception.ThrowUtils;
-import com.mhc.myoj.model.dto.question.QuestionAddRequest;
-import com.mhc.myoj.model.dto.question.QuestionEditRequest;
-import com.mhc.myoj.model.dto.question.QuestionQueryRequest;
-import com.mhc.myoj.model.dto.question.QuestionUpdateRequest;
+import com.mhc.myoj.model.dto.question.*;
+import com.mhc.myoj.model.dto.questionsubmit.QuestionSubmitQueryRequest;
 import com.mhc.myoj.model.entity.Question;
+import com.mhc.myoj.model.entity.QuestionSubmit;
 import com.mhc.myoj.model.entity.User;
+import com.mhc.myoj.model.vo.QuestionSubmitVO;
 import com.mhc.myoj.model.vo.QuestionVO;
 import com.mhc.myoj.service.QuestionService;
+import com.mhc.myoj.service.QuestionSubmitService;
 import com.mhc.myoj.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -44,6 +45,9 @@ public class QuestionController {
     @Resource
     private UserService userService;
 
+    @Resource
+    private QuestionSubmitService questionSubmitService;
+
     // region 增删改查
 
     /**
@@ -63,6 +67,14 @@ public class QuestionController {
         List<String> tags = questionAddRequest.getTags();
         if (tags != null) {
             question.setTags(JSONUtil.toJsonStr(tags));
+        }
+        List<JudgeCase> judgeCase = questionAddRequest.getJudgeCase();
+        JudgeConfig judgeConfig = questionAddRequest.getJudgeConfig();
+        if (judgeCase != null) {
+            question.setJudgeCase(JSONUtil.toJsonStr(judgeConfig));
+        }
+        if (judgeConfig != null) {
+            question.setJudgeConfig(JSONUtil.toJsonStr(judgeConfig));
         }
         questionService.validQuestion(question, true);
         User loginUser = userService.getLoginUser(request);
@@ -118,6 +130,14 @@ public class QuestionController {
         if (tags != null) {
             question.setTags(JSONUtil.toJsonStr(tags));
         }
+        List<JudgeCase> judgeCase = questionUpdateRequest.getJudgeCase();
+        JudgeConfig judgeConfig = questionUpdateRequest.getJudgeConfig();
+        if (judgeCase != null) {
+            question.setJudgeCase(JSONUtil.toJsonStr(judgeConfig));
+        }
+        if (judgeConfig != null) {
+            question.setJudgeConfig(JSONUtil.toJsonStr(judgeConfig));
+        }
         // 参数校验
         questionService.validQuestion(question, false);
         long id = questionUpdateRequest.getId();
@@ -129,7 +149,7 @@ public class QuestionController {
     }
 
     /**
-     * 根据 id 获取
+     * 用户根据 id 获取题目信息
      *
      * @param id
      * @return
@@ -163,7 +183,7 @@ public class QuestionController {
     }
 
     /**
-     * 分页获取列表（封装类）
+     * 用户分页获取列表（封装类）
      *
      * @param questionQueryRequest
      * @param request
@@ -182,7 +202,7 @@ public class QuestionController {
     }
 
     /**
-     * 分页获取当前用户创建的资源列表
+     * 用户分页获取当前用户创建的资源列表
      *
      * @param questionQueryRequest
      * @param request
@@ -236,6 +256,25 @@ public class QuestionController {
         }
         boolean result = questionService.updateById(question);
         return ResultUtils.success(result);
+    }
+
+    /**
+     * 分页获取题目提交列表 (非管理员仅能看到提交题目的公开信息)
+     *
+     * @param questionQueryRequest
+     * @return
+     */
+    @PostMapping("/list/submit/page")
+    public BaseResponse<Page<QuestionSubmitVO>> listQuestionSubmitByPage(@RequestBody QuestionSubmitQueryRequest questionQueryRequest,
+                                                                         HttpServletRequest request) {
+        long current = questionQueryRequest.getCurrent();
+        long size = questionQueryRequest.getPageSize();
+        // 获取对应查询条件的原始的页
+        Page<QuestionSubmit> questionSubmitPage = questionSubmitService.page(new Page<>(current, size),
+                questionSubmitService.getQueryWrapper(questionQueryRequest));
+        // 返回脱敏的页
+        User loginUser = userService.getLoginUser(request);
+        return ResultUtils.success(questionSubmitService.getQuestionSubmitVOPage(questionSubmitPage, loginUser));
     }
 
 }

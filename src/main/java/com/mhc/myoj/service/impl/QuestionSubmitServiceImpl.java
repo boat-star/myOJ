@@ -66,6 +66,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         questionSubmit.setJudgeInfo("{}");
         boolean save = this.save(questionSubmit);
         if (!save) {
+            // save
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "数据提交失败");
         }
         return questionSubmit.getId();

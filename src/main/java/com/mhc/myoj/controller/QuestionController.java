@@ -71,7 +71,7 @@ public class QuestionController {
         List<JudgeCase> judgeCase = questionAddRequest.getJudgeCase();
         JudgeConfig judgeConfig = questionAddRequest.getJudgeConfig();
         if (judgeCase != null) {
-            question.setJudgeCase(JSONUtil.toJsonStr(judgeConfig));
+            question.setJudgeCase(JSONUtil.toJsonStr(judgeCase));
         }
         if (judgeConfig != null) {
             question.setJudgeConfig(JSONUtil.toJsonStr(judgeConfig));
@@ -133,7 +133,7 @@ public class QuestionController {
         List<JudgeCase> judgeCase = questionUpdateRequest.getJudgeCase();
         JudgeConfig judgeConfig = questionUpdateRequest.getJudgeConfig();
         if (judgeCase != null) {
-            question.setJudgeCase(JSONUtil.toJsonStr(judgeConfig));
+            question.setJudgeCase(JSONUtil.toJsonStr(judgeCase));
         }
         if (judgeConfig != null) {
             question.setJudgeConfig(JSONUtil.toJsonStr(judgeConfig));
@@ -150,6 +150,29 @@ public class QuestionController {
 
     /**
      * 用户根据 id 获取题目信息
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/get")
+    public BaseResponse<Question> getQuestionById(long id, HttpServletRequest request) {
+        if (id <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Question question = questionService.getById(id);
+        if (question == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        // 如果不是本人或者非管理员
+        if (!loginUser.getId().equals(question.getUserId()) && !userService.isAdmin(loginUser)) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+        }
+        return ResultUtils.success(question);
+    }
+
+    /**
+     * 用户根据 id 获取题目信息(VO)
      *
      * @param id
      * @return

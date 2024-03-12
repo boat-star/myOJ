@@ -47,7 +47,7 @@ public class QuestionSubmit implements Serializable {
     private Long questionId;
 
     /**
-     * 创建用户 id
+     * 提交用户 id
      */
     private Long userId;
 

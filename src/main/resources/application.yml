@@ -104,4 +104,4 @@ knife4j:
 
 # 代码沙箱类型
 codesandbox:
-  type: example
+  type: remote

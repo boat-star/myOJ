@@ -68,7 +68,7 @@ public class JudgeServiceImpl implements JudgeService {
         }
 
         // 4）调用沙箱，获取到执行结果
-        CodeSandbox codeSandbox = CodeSandboxFactory.newInstance(type);
+        CodeSandbox codeSandbox = CodeSandboxFactory.newInstance(type); // 静态工厂模式
         // 执行代理类
         codeSandbox = new CodeSandboxProxy(codeSandbox);
         String code = questionSubmit.getCode();

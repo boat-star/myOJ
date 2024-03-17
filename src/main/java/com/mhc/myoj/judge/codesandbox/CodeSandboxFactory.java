@@ -9,16 +9,13 @@ import com.mhc.myoj.judge.codesandbox.impl.ThirdPartyCodeSandboxImpl;
  */
 public class CodeSandboxFactory {
     public static CodeSandbox newInstance(String type) {
-        switch (type) {
-            case "example":
-                return new ExampleCodeSandboxImpl();
-            case "remote":
-                return new RemoteCodeSandboxImpl();
-            case "thirdParty":
-                return new ThirdPartyCodeSandboxImpl();
-            default:
+        return switch (type) {
+            case "example" -> new ExampleCodeSandboxImpl();
+            case "remote" -> new RemoteCodeSandboxImpl();
+            case "thirdParty" -> new ThirdPartyCodeSandboxImpl();
+            default ->
                 // 默认返回实例代码沙箱
-                return new ExampleCodeSandboxImpl();
-        }
+                    new ExampleCodeSandboxImpl();
+        };
     }
 }
